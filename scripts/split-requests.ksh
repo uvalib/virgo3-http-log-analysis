@@ -48,6 +48,10 @@ for i in root $INTERESTING_PATHS; do
    printf " %-15s : %d\n" $i $N >> $SUMMARY_FILE
 done
 
+# calculate the maximum number of requests per hour (exclude root queries)
+grep "\"GET /" $INFILE | grep -v "\"GET /\"" | awk '{print $4}' | awk -F: '{print $2}' | sort | uniq -c | sort -n | tail -1 | awk '{ printf "\nMax requests/hour: %s (%s:00 hours). This excludes root/healthchecks\n", $1, $2}' >> $SUMMARY_FILE
+
+
 exit 0
 
 #

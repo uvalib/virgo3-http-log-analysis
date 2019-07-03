@@ -25,7 +25,9 @@ rm $SUMMARY_FILE > /dev/null 2>&1
 for file in $(<$TMPFILE); do
    DATE=$(basename $file ".summary" | awk -F\- '{print $2}')
    TOTAL=$(grep "total requests" $file | awk '{print $1}')
+   MAX_HOUR=$(grep "Max requests" $file | awk '{print $3}')
    echo "$DATE total requests: $TOTAL"  >> $SUMMARY_FILE
+   echo "$DATE max/hour: $MAX_HOUR"  >> $SUMMARY_FILE
 done
 
 rm $TMPFILE
@@ -39,7 +41,9 @@ AVG=$(echo "scale=2; $SUM / $COUNT" | bc)
 
 echo "" >> $SUMMARY_FILE
 echo "Average daily requests: $AVG" >> $SUMMARY_FILE
+
 grep "total requests" $SUMMARY_FILE | awk '{print $4, $1}' | sort -n | tail -1 | awk '{printf "Most requests: %s (on %s)\n", $1, $2}' >> $SUMMARY_FILE
+grep "max/hour" $SUMMARY_FILE | awk '{print $3, $1}' | sort -n | tail -1 | awk '{printf "Max/hour: %s (on %s)\n", $1, $2}' >> $SUMMARY_FILE
 
 rm $TMPFILE
 
